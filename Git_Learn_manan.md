@@ -755,7 +755,11 @@ git mv 和直接mv区别
 
 ​            使用git命令进行重命名和删除操作，可以直接git commit
 
+- 将一个文件由已暂存的转化成未暂存的
 
+~~~bash
+$ git rm --cached filename
+~~~
 
 ## 四、远程版本库
 

@@ -157,6 +157,12 @@ $ git rm git_test.txt
 $ git commit -m "delete"
 ~~~
 
+将一个文件由已暂存的转化成未暂存的
+
+~~~bash
+$ git rm --cached filename
+~~~
+
 - **重命名文件**
 
 ~~~bash
@@ -477,3 +483,25 @@ $ git cherry-pick 10baade
 ~~~
 
 如果合并发生冲突，手工解决就可以了。
+
+# 6、其他命令
+
+- 通过对象的唯一前缀来查找对象的散列值
+
+~~~bash
+$ git rev-parse 3b18e512d
+3b18e512dba79e4c8300dd08aeb37f8e728b8dad
+~~~
+
+- 显示版本号
+
+~~~bash
+$ git --version
+~~~
+
+- 查看暂存文件的SHA1散列值：
+
+~~~bash
+$ git ls-files --stage
+~~~
+
