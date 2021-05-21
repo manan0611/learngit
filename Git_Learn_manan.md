@@ -781,6 +781,20 @@ $ git remote add origin http://github.com/liujixia0410/learngit.git
 
 添加后，远程库的名字就是origin，这是Git默认的叫法，也可以改成别的，但是origin这个名字一看就知道是远程库。
 
+<font color='red'>如果url地址写错了怎么办</font>
+
+可以通过如下命令取消
+
+~~~bash
+$ git remote rm origin
+~~~
+
+通过如下命令可以查看远程库的地址（删除后可以执行这个查看一下，结果为空就是对的）
+
+~~~bash
+$ git remote -v
+~~~
+
 下一步，就可以把本地库的所有内容推送到远程库上：
 
 ```bash
@@ -865,6 +879,37 @@ Initialize this repository with a README
 
 这样GitHub会自动为我们创建一个README.md文件。创建完毕后，可以看到README.md文件。
 
+-----------------------
+
+------------
+
+
+
+<font color='red'>clone之前需要这样做</font>
+
+克隆之前，需要先生成SHH KEY。步骤如下：
+
+~~~bash
+//查看一下是否生成了id_rsa文件，如果没有说明没有生成ssh key
+$ cd ~/.ssh
+//如果没有生成ssh key，需要执行如下命令生成ssh key
+$ ssh-keygen -t rsa -C "manan0611"
+~~~
+
+![image-20210519144707947](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20210519144707947.png)
+
+可以看到提示路径：/c/Users/Lenovo/.ssh/id_rsa
+
+打开这个路径下的id_rsa.pub文件，复制其中的ssh key
+
+打开github，个人>>settings>>SSH and GPG keys 点击 New SSH key ，起个名，把复制的ssh key命令粘上去就可以了。
+
+----------------------------
+
+----------------
+
+
+
 现在，远程库已经准备好了，使用命令 ***`git clone`*** 克隆一个本地库。
 
 ```bash
@@ -891,11 +936,11 @@ GitHub给出的地址不止一个，还可以用 https://github.com/liujixia0410
 
 使用https除了速度慢以外，还有个最大的麻烦是每次推送都必须输入口令，但是在某些只开放http端口的公司内部就无法使用ssh协议而只能用https。
 
+说明：克隆下来的库，可以看出它是和远程端建立了链接的，可以通过git push origin main的命令来上传更新
+
+![image-20210519150751193](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20210519150751193.png)
+
 ## 五、分支管理
-
-分支概念在这里就不介绍了，学习Git的前提，应该是已经使用过其他的版本管理工具，比如SVN，对分支已经有一些了解。
-
-本章节，仅介绍Git与其他版本管理工具在分支管理方面的区别，看看Git为什么更好。
 
 ### 5.1 创建与合并分支
 
@@ -929,7 +974,7 @@ Git创建一个分支很快的原因就在这，因为除了增加一个dev指�
 
 ![git_branch_rm](https://gitee.com/liujixia0410/picbed/raw/master/gitlearn/git_branch_rm.png)
 
-到这，通过分支dev的一系列操作和提交，都全部合并到master了，但是我们都看不出来曾经有过一个dev分支。。。。。。
+到这，通过分支dev的一系列操作和提交，都全部合并到master了，但是我们都看不出来曾经有过一个dev分支。
 
 下面，具体操作一次。
 
@@ -938,10 +983,10 @@ Git创建一个分支很快的原因就在这，因为除了增加一个dev指�
 我们先创建并且换到一个新的分支上，分支命名"brlearn"（对应上文描述原理中的dev）。
 
 ```bash
-$ git checkout -b brlearn
+$ git checkout -b brlearn //创建并切换至新的分支
 Switched to a new branch 'brlearn'
 
-$ git branch
+$ git branch  //列出所有分支，当前分支前面标注*号
 * brlearn
   master
 ```
@@ -949,16 +994,14 @@ $ git branch
 ***`git checkout`*** 命令加上 ***`-b`*** 参数表示创建并切换，相当于以下两条命令。
 
 ```bash
-$ git branch brlearn
-$ git checkout brlearn
+$ git branch brlearn //创建分支
+$ git checkout brlearn //切换到某个分支
 Switched to a new branch 'brlearn'
 
-$ git branch
+$ git branch  //列出所有分支，当前分支前面标注*号
 * brlearn
   master
 ```
-
-***`git branch`*** 命令会列出所有分支，当前分支前面标注*号。
 
 现在已经在 *brlearn* 分支上了，我们在"gitversion.txt"里增加一行"Git branch brlearn add 1st."。然后提交，看看 *brlearn* 分支与 *master* 的区别。
 
@@ -1048,6 +1091,56 @@ $ git branch
 ```
 
 因为创建、合并和删除分支非常快，所以Git鼓励你使用分支完成某个任务，合并后再删掉分支，这和直接在 *`master`* 分支上工作效果是一样的，但过程更安全。
+
+<font color='red'>**如果删除了分支后发现删错了想恢复怎么办？**</font>
+
+用reflog命令，查看想恢复分支的commit_id，然后执行如下语句，可以恢复至目标节点：
+
+~~~bash
+$ git branch brfuture commit_id
+~~~
+
+需要注意的是，此时只是恢复了分支brfuture到目标节点，对于其他分支，没有发生任何改变。
+
+<font color='red'>**合并分支之前想要知道两个分支的差别怎么做？**</font>
+
+假设我们有两个分支，dev和master（以下比较均仅针对提交内容）
+
+查看dev有，而master中没有的
+
+~~~bash
+$ git log dev ^master
+//或者用如下命令，表示dev比master多提交的内容（与上面结果一样）
+$ git log master..dev
+~~~
+
+查看master中有，而dev中没有的内容：
+
+~~~bash
+$ git log master ^dev
+//或者用如下命令，表示master比dev多提交的内容（与上面结果一样）
+$ git log dev..master
+~~~
+
+如果不知道谁提交的多，谁提交的少，可以用如下命令查看各自的提交：
+
+~~~bash
+$ git log --left-right dev...master
+~~~
+
+“>”表示是master提交的，“<”表示是dev提交的。
+
+说明：
+
+如果dev做了修改提交，master没有做修改提交，那么此时做merge操作将master合并到dev上，不会发生任何变化。也就是说不会覆盖dev的提交。
+
+如果master做了修改，没有add，或者只add但没有commit，则此部分合并时不会合并到其他分支上
+
+如果工作区有修改，或者dev分支的暂存区有修改，将master分支合并到dev分支上，不会对工作区和dev分支的暂存区做任何改动。
+
+总结：
+
+合并的是已提交的内容，合并的根本是移动HEAD指针，所以未修改的分支不会通过合并操作覆盖掉修改的分支。
 
 #### 5.1.3 切换分支 git switch
 
@@ -1311,6 +1404,90 @@ $ git log --graph --pretty=oneline --abbrev-commit
 ......
 ```
 
+<font color='red'>**对比ff模式和no-ff模式区别**</font>
+
+创建分支fftest使用fast-forward  f1.txt
+
+git switch -c fftest
+
+~~~bash
+*673fd59 (HEAD -> fftest, main) Merge branch 'brff'
+...
+~~~
+
+echo 'add by fftest ***'>f1.txt
+git add f1.txt
+git commit -m "commit f1.txt by fftest"
+
+~~~bash
+*   ee685ed (HEAD -> fftest) commit f1.txt by fftest
+*   673fd59 (main) Merge branch 'brff'
+    ...
+~~~
+
+git switch main
+
+~~~bash
+*   673fd59 (HEAD -> main) Merge branch 'brff'
+...
+~~~
+
+git merge fftest
+
+~~~bash
+* ee685ed (HEAD -> main, fftest) commit f1.txt by fftest
+*   673fd59 Merge branch 'brff'
+...
+~~~
+
+创建分支nofftest使用禁用fast-forward  f2.txt
+
+git switch -c nofftest
+
+~~~bash
+* ee685ed (HEAD -> nofftest, main, fftest) commit f1.txt by fftest
+*   673fd59 Merge branch 'brff'
+...
+~~~
+
+echo 'add by nofftest ***'>f2.txt
+git add f2.txt
+git commit -m "commit f2.txt by nofftest"
+
+~~~
+* dd2c509 (HEAD -> nofftest) commit f2.txt by nofftest
+* ee685ed (main, fftest) commit f1.txt by fftest
+*   673fd59 Merge branch 'brff'
+...
+~~~
+
+git switch main
+
+~~~bash
+* ee685ed (HEAD -> main, fftest) commit f1.txt by fftest
+...
+~~~
+
+git merge --no-ff -m "merge nofftest to main" nofftest
+
+~~~bash
+*   81420e1 (HEAD -> main) merge nofftest to main
+|\
+| * dd2c509 (nofftest) commit f2.txt by nofftest
+|/
+* ee685ed (fftest) commit f1.txt by fftest
+*   673fd59 Merge branch 'brff'
+...
+~~~
+
+总结：可以看出，使用默认的ff方式，体现不出分支merge记录，而使用no-ff时，因为会创建一个新的commit，可以将分支的提交comment和合并的comment都展示出来。恢复的时候有用处：
+
+对于ff方式来说，恢复至ee685ed，只能恢复成合并以后的状态；
+
+对于noff方式来说，恢复至dd2c509表示此时分支没有合并；恢复至81420e1表示此时分支合并了。
+
+![image-20210520150909558](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20210520150909558.png)
+
 - <font color="red">**分支策略说明**</font>
 
 <font color="red">在实际开发中，我们应该按照几个基本原则进行分支管理：</font>
@@ -1488,6 +1665,12 @@ $ git stash list
 
 ```
 
+特别说明：
+
+git stash不针对特定的分支，切换分支后，stash内容不变，所以弹出时要小心；
+
+git stash pop或者drop后，stash的序号会自动改变，连续弹出时要注意。
+
 #### 5.4.2 将master分支的修复，merge到其他dev分支 git cherry-pick
 
 通过以上操作，在 `master` 分支上修复了bug。但是，`brdev` 分支是早期从 `master` 分支分出来的，所以，这个bug其实在当前 `brdev` 分支上也存在。
@@ -1596,6 +1779,8 @@ ssh-rsa AAAAB3NzaC1yc2xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxThU= liujixia0410@163
 ![Gitee_create_repo](https://gitee.com/liujixia0410/picbed/raw/master/gitlearn/Gitee_create_repo.png)
 
 然后，我们在本地库使用命令 ***`git remote add`*** 把本地库与Gitee远程库关联起来。
+
+git remote add lemontree git@gitee.com:manan0611/learnnote.git
 
 ```bash
 $ git remote add origin git@gitee.com:liujixia0410/learngit.git
