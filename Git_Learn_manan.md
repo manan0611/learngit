@@ -889,7 +889,7 @@ Initialize this repository with a README
 
 
 
-<font color='red'>clone之前需要这样做</font>
+<font color='red'>使用SSH做clone之前需要这样做</font>
 
 克隆之前，需要先生成SHH KEY。步骤如下：
 
@@ -929,6 +929,9 @@ remote: Counting objects: 100% (3/3), done.
 remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
 Receiving objects: 100% (3/3), done.
 
+//如果路径下有多个分支，可以用如下命令克隆某个分支（如master分支）
+$ git clone -b master git@github.com:liujixia0410/gitremotetest.git
+
 $ ll
 total 57
 -rwxr-xr-x 1 lenovo 197121  5114 12月 14 19:57 github.sh*
@@ -943,6 +946,39 @@ GitHub给出的地址不止一个，还可以用 https://github.com/liujixia0410
 说明：克隆下来的库，可以看出它是和远程端建立了链接的，可以通过git push origin main的命令来上传更新
 
 ![image-20210519150751193](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20210519150751193.png)
+
+### 4.3 从远端拉取 git pull
+
+【git clone 和 git pull 相同点】：都是从远程服务器拉取代码到本地
+
+【git clone 和 git pull 不同点】：
+
+git clone
+是在本地没有版本库的时候，从远程服务器克隆整个版本库到本地，是一个本地从无到有的过程。
+
+git pull
+在本地有版本库的情况下，从远程库获取最新commit 数据（如果有的话），并merge（合并）到本地。
+
+git pull = git fetch + git merge
+
+举例：
+
+将远程主机 origin 的 master 分支拉取过来，与本地的 brantest 分支合并。
+
+```bash
+git pull origin master:brantest
+```
+
+如果远程分支是与当前分支合并，则冒号后面的部分可以省略。
+
+~~~bash
+git pull origin master
+~~~
+
+【使用场景】
+通常情况下，远程操作的第一步，是使用git clone从远程主机克隆一个版本库到本地。
+
+本地修改代码后，每次从本地仓库push到远程仓库之前都要先进行git pull操作，保证push到远程仓库时没有版本冲突。
 
 ## 五、分支管理
 
